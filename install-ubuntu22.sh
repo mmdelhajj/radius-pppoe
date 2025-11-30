@@ -208,9 +208,25 @@ EOF
 if systemctl restart mysql 2>/dev/null; then
     echo -e "${GREEN}✓ MySQL performance optimized and restarted${NC}"
 else
-    echo -e "${YELLOW}⚠ MySQL restart failed, but continuing (MySQL is running)${NC}"
+    echo -e "${YELLOW}⚠ MySQL restart failed, removing performance config${NC}"
     rm -f /etc/mysql/mysql.conf.d/proradius4.cnf
+    # Ensure MySQL is started
+    systemctl start mysql 2>/dev/null || true
 fi
+
+# Wait for MySQL to be ready
+echo -e "${YELLOW}Waiting for MySQL to be ready...${NC}"
+for i in {1..30}; do
+    if mysqladmin ping -u root -p"$DB_ROOT_PASS" 2>/dev/null | grep -q "mysqld is alive"; then
+        echo -e "${GREEN}✓ MySQL is ready${NC}"
+        break
+    fi
+    if [ $i -eq 30 ]; then
+        echo -e "${RED}✗ MySQL failed to start after 30 seconds${NC}"
+        exit 1
+    fi
+    sleep 1
+done
 
 # Import database schema if available
 if [ -f "database/schema.sql" ]; then
