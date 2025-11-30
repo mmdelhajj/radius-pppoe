@@ -81,7 +81,7 @@ DOMAIN="localhost"
 # Ask for domain name
 echo -e "${YELLOW}[?] Enter your domain name (or press Enter for localhost):${NC}"
 read -p "Domain: " user_domain
-if [ ! -z "$user_domain" ]; then
+if [ -n "$user_domain" ]; then
     DOMAIN="$user_domain"
 fi
 
