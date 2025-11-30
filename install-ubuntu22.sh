@@ -166,11 +166,16 @@ if ! mysql -u root -e "SELECT 1;" 2>/dev/null; then
 
     # Stop MySQL
     systemctl stop mysql
+    sleep 2
+
+    # Ensure socket directory exists
+    mkdir -p /var/run/mysqld
+    chown mysql:mysql /var/run/mysqld
 
     # Start MySQL in safe mode (skip grant tables)
     mysqld_safe --skip-grant-tables &
     SAFE_PID=$!
-    sleep 5
+    sleep 7
 
     # Reset root password
     mysql -u root <<EOSQL
