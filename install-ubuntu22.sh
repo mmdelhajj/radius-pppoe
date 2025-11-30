@@ -614,7 +614,7 @@ chown -R $APP_USER:$APP_USER $APP_DIR
 echo -e "${YELLOW}Running Django migrations...${NC}"
 cd $APP_DIR
 sudo -u $APP_USER $APP_DIR/venv/bin/python manage.py makemigrations --noinput 2>/dev/null || true
-sudo -u $APP_USER $APP_DIR/venv/bin/python manage.py migrate --noinput
+sudo -u $APP_USER $APP_DIR/venv/bin/python manage.py migrate --fake-initial --noinput
 
 # Create Django superuser
 echo -e "${YELLOW}Creating Django superuser...${NC}"
