@@ -78,14 +78,8 @@ APP_DIR="/home/proradius4"
 APP_USER="proradius"
 DOMAIN="localhost"
 
-# Ask for domain name
-echo -e "${YELLOW}[?] Enter your domain name (or press Enter for localhost):${NC}"
-read -p "Domain: " user_domain
-if [ -n "$user_domain" ]; then
-    DOMAIN="$user_domain"
-fi
-
 echo -e "${CYAN}Domain: $DOMAIN${NC}"
+echo -e "${YELLOW}Note: Using localhost. You can change this later in .env file${NC}"
 echo ""
 
 # Update system
