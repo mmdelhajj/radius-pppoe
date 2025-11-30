@@ -158,8 +158,42 @@ echo -e "${YELLOW}[6/15] Configuring MySQL database...${NC}"
 systemctl start mysql
 systemctl enable mysql > /dev/null 2>&1
 
+# Check if MySQL root has a password already
+MYSQL_HAS_PASSWORD=false
+if ! mysql -u root -e "SELECT 1;" 2>/dev/null; then
+    MYSQL_HAS_PASSWORD=true
+    echo -e "${YELLOW}⚠ MySQL root password already set, resetting...${NC}"
+
+    # Stop MySQL
+    systemctl stop mysql
+
+    # Start MySQL in safe mode (skip grant tables)
+    mysqld_safe --skip-grant-tables &
+    SAFE_PID=$!
+    sleep 5
+
+    # Reset root password
+    mysql -u root <<EOSQL
+FLUSH PRIVILEGES;
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '$DB_ROOT_PASS';
+FLUSH PRIVILEGES;
+EOSQL
+
+    # Stop safe mode MySQL
+    mysqladmin -u root -p"$DB_ROOT_PASS" shutdown 2>/dev/null || killall mysqld 2>/dev/null || true
+    sleep 3
+
+    # Start MySQL normally
+    systemctl start mysql
+    sleep 3
+    echo -e "${GREEN}✓ MySQL root password reset${NC}"
+fi
+
 # Secure MySQL installation
-mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '$DB_ROOT_PASS';" 2>/dev/null || true
+if [ "$MYSQL_HAS_PASSWORD" = false ]; then
+    mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '$DB_ROOT_PASS';" 2>/dev/null || true
+fi
+
 mysql -u root -p"$DB_ROOT_PASS" -e "DELETE FROM mysql.user WHERE User='';" 2>/dev/null || true
 mysql -u root -p"$DB_ROOT_PASS" -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');" 2>/dev/null || true
 mysql -u root -p"$DB_ROOT_PASS" -e "DROP DATABASE IF EXISTS test;" 2>/dev/null || true
