@@ -2,6 +2,33 @@
 
 Complete ISP management solution combining billing, RADIUS authentication, IPTV management, and customer portal.
 
+## 🚀 One-Click Installation
+
+**Ubuntu 22.04 LTS** - Secure, automated installation in ~15 minutes:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/mmdelhajj/radius-pppoe/main/install-ubuntu22.sh | sudo bash
+```
+
+Or clone first:
+
+```bash
+git clone https://github.com/mmdelhajj/radius-pppoe.git
+cd radius-pppoe
+sudo bash install-ubuntu22.sh
+```
+
+**What it does automatically**:
+- ✅ Installs Python 3.10, Django 4.2.8, MySQL, FreeRADIUS, Nginx
+- ✅ Generates strong passwords (32-64 characters)
+- ✅ Configures all security features (CSRF, SSL/TLS, Firewall)
+- ✅ Sets up automated backups and session cleanup
+- ✅ Creates admin user and displays all credentials
+
+**All 15 security issues FIXED** - See [SECURITY.md](SECURITY.md) for details.
+
+---
+
 ## Features
 
 ### Core ISP Management
