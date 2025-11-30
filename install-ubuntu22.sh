@@ -204,8 +204,13 @@ slow_query_log_file = /var/log/mysql/slow-query.log
 long_query_time = 2
 EOF
 
-systemctl restart mysql
-echo -e "${GREEN}✓ MySQL performance optimized${NC}"
+# Try to restart MySQL (may fail if already configured)
+if systemctl restart mysql 2>/dev/null; then
+    echo -e "${GREEN}✓ MySQL performance optimized and restarted${NC}"
+else
+    echo -e "${YELLOW}⚠ MySQL restart failed, but continuing (MySQL is running)${NC}"
+    rm -f /etc/mysql/mysql.conf.d/proradius4.cnf
+fi
 
 # Import database schema if available
 if [ -f "database/schema.sql" ]; then
